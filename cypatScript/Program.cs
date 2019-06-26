@@ -34,15 +34,15 @@ namespace cypatScript
                 switch (usrIn)
                 {case "1":
                         new Thread(() => 
-                        {Console.WriteLine("starting bad users thread...");
+                        {Console.WriteLine("starting bad users search, this will take a while the first time...");
                             Thread.CurrentThread.IsBackground = true; 
                             //TODO compare machine stuff to readme. have a method that makes a new window containing the colored users and nest methods from there.
-                            
-                            formatReadmeToLists(GetReadmeThings(GetReadme()), out List<String> users, out List<String> admins);
-                            
-                            users.ForEach(Console.WriteLine);
-                            admins.ForEach(Console.WriteLine);
-                            
+                            foreach (var keyValuePair in CheckIfAccountOnMachine(FormatReadmeToLists(GetReadmeThings(GetReadme()))))
+                            {
+                                Console.WriteLine(keyValuePair.Key + $" is {keyValuePair.Value}");
+                            }
+
+
                         }).Start();
                         Thread.Sleep(100);
                     break;
@@ -71,7 +71,7 @@ namespace cypatScript
 
         #region Users and readme 
         
-        private static IEnumerable<string> GetMachineAdmins()
+        private static List<string> GetMachineAdmins()
         {    var returns = new List<string>();
             using (var machine = new DirectoryEntry("WinNT://" + Environment.MachineName))
             {
@@ -87,7 +87,7 @@ namespace cypatScript
         }
         
         
-        private static IEnumerable<string> GetMachineUsers()
+        private static List<string> GetMachineUsers()
         {    var returns = new List<string>();
             using (var machine =  new DirectoryEntry("WinNT://" + Environment.MachineName))
             {
@@ -131,17 +131,24 @@ namespace cypatScript
 
         
         /// <summary>
-        /// parses the pre element to find the users and admins marked by the HTML and enumerates them in a list
+        /// parses the pre element to find the users and admins marked by the HTML and enumerates them in a Dictionary
         /// </summary>
         /// <param name="readmeData">the string to parse</param>
-        /// <param name="users">the names of found users</param>
-        /// <param name="admins">the names of found admins</param>
-        private static void formatReadmeToLists(String readmeData,out List<String> users,out List<String> admins)
+       
+        private static Dictionary<String,AccountType> FormatReadmeToLists(String readmeData)
         {
+            var result = new Dictionary<String, AccountType>();
+            var users = new List<string>();
+            var admins = new List<string>();
             
             String[] split = readmeData.Split(new []{"Authorized Users:"},StringSplitOptions.RemoveEmptyEntries);
 
             users = split[1].Split(new[] { "\r\n", "\r", "\n" },StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach (var user in users)//add users to map
+            {
+                result.Add(user,AccountType.User);
+            }
 
             admins = split[0].Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).ToList();
             admins.Remove("Authorized Administrators:");
@@ -157,8 +164,117 @@ namespace cypatScript
 
                 admins[i] = name.Split(' ')[0];//removes (you)
             }
+
+            foreach (var admin in admins)//add admins to map
+            {
+                result.Add(admin,AccountType.Admin);
+                
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Checks the readme accounts against the local accounts and marks what should be done.
+        /// </summary>
+        /// <param name="accounts">A Dictionary of accounts from the readme marked as the proffered type via the Value</param>
+        /// <returns>A Dictionary formatted with the result of the check. User or Admin means the account is fine, the rest are self explanatory</returns>
+        private static Dictionary<String,AccountType> CheckIfAccountOnMachine(Dictionary<String,AccountType> accounts)
+        {
+            var result = new Dictionary<String,AccountType>();
+            var localUsers = GetMachineUsers();
+            var localAdmins = GetMachineAdmins();
+            
+            //TODO foreach the local users and admins to see if the readme map contains them, if not, remove
+            foreach (var account in accounts)
+            {
+                if (account.Value == AccountType.User)//if marked as user in readme,
+                {
+                    if (localUsers.Contains(account.Key))//if existing on machine, add as User
+                    {
+                        result.Add(account.Key,account.Value);
+
+                    }
+                    else
+                    {
+                        if (localAdmins.Contains(account.Key))//if admin, but should be User
+                        {
+                            result.Add(account.Key,AccountType.ShouldBeUser);
+                        }
+                        else
+                        {
+                            result.Add(account.Key, AccountType.ShouldBeAddedAsUser);//they should be added
+                        }
+                    }
+                    
+                }//end users
+
+                if (account.Value == AccountType.Admin)//if marked as admin
+                {
+                    if (localAdmins.Contains(account.Key))//if existing on machine
+                    {
+                        result.Add(account.Key,account.Value);
+
+                    }
+                    else
+                    {
+                        if (localUsers.Contains(account.Key))//if user, but should be admin
+                        {
+                            result.Add(account.Key,AccountType.ShouldBeAdmin);
+                        }
+                        else
+                        {
+                            result.Add(account.Key, AccountType.ShouldBeAddedAsAdmin);//they should be added
+                        }
+                        
+                    }
+                    
+                }//end admins
+                
+            }
+
+            foreach (var localUser in localUsers)//checking if local users should exist
+            {
+                if (!accounts.ContainsKey(localUser))
+                {
+                    try
+                    {
+                        result.Add(localUser,AccountType.ShouldBeRemoved);
+                    }
+                    catch (Exception e)//if they were already added above
+                    {
+                        result.Remove(localUser);
+                        result.Add(localUser,AccountType.ShouldBeRemoved);
+                    }
+                }
+                
+                
+            }
+            
+            foreach (var localAdmin in localAdmins)//checking if local admins should exist
+            {
+                if (!accounts.ContainsKey(localAdmin))
+                {
+                    try
+                    {
+                        result.Add(localAdmin,AccountType.ShouldBeRemoved);
+                    }
+                    catch (Exception e)//if they were already added above
+                    {
+                        result.Remove(localAdmin);
+                        result.Add(localAdmin,AccountType.ShouldBeRemoved);
+                    }
+                    
+                }
+                
+                
+            }
+
+
+            return result;
             
         }
+        
         
         #endregion
         
