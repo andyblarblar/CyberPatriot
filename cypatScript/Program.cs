@@ -3,11 +3,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.DirectoryServices;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.IO;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+using System.Text;
+using Console = Colorful.Console;
+using System.Windows.Forms;
+
+
+
+/*
+ * backlog:
+ * add an option to delete to be reomved users (easy)
+ * stylise the ACII (easy)
+ * 
+ *
+ *
+ * 
+ */
+    
 
 namespace cypatScript
 {
@@ -15,9 +30,9 @@ namespace cypatScript
     {
         private static readonly String UsrProfile = Environment.GetEnvironmentVariable("USERPROFILE"); 
         public static void Main(string[] args)
-        {Console.WriteLine("Greetings comrade. It is currently {0}",DateTime.Now);
-        MainLoop();
-        
+        {   Console.WriteAscii("Code Crusaders");
+            Console.WriteLine($"By the Pope! It is currently {DateTime.Now}");
+            MainLoop();
         }
 
         private static void MainLoop()
@@ -35,14 +50,19 @@ namespace cypatScript
                 {case "1":
                         new Thread(() => 
                         {Console.WriteLine("starting bad users search, this will take a while the first time...");
-                            Thread.CurrentThread.IsBackground = true; 
-                            //TODO compare machine stuff to readme. have a method that makes a new window containing the colored users and nest methods from there.
-                            foreach (var keyValuePair in CheckIfAccountOnMachine(FormatReadmeToLists(GetReadmeThings(GetReadme()))))
+                            Thread.CurrentThread.IsBackground = true;
+
+                            try
                             {
-                                Console.WriteLine(keyValuePair.Key + $" is {keyValuePair.Value}");
+                                ShowMessageBoxWithUsers(
+                                    CheckIfAccountOnMachine(FormatReadmeToLists(GetReadmeThings(GetReadme()))));
                             }
-
-
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("\nThere were problems in the bad users thread! (most likely no readme on desktop, or new error)",Color.Fuchsia);
+                                
+                            }
+                            
                         }).Start();
                         Thread.Sleep(100);
                     break;
@@ -68,7 +88,7 @@ namespace cypatScript
 
 
 
-
+        
         #region Users and readme 
         
         private static List<string> GetMachineAdmins()
@@ -115,7 +135,7 @@ namespace cypatScript
         /// <returns>raw users and admins (so not usable yet)</returns>
         private static String GetReadmeThings(String reamePath)
         { 
-            var doc = new HtmlDocument();
+            var doc = new HtmlAgilityPack.HtmlDocument();
             doc.Load(reamePath);
             foreach (var node in doc.DocumentNode.Descendants().ToList())
             {
@@ -185,7 +205,6 @@ namespace cypatScript
             var localUsers = GetMachineUsers();
             var localAdmins = GetMachineAdmins();
             
-            //TODO foreach the local users and admins to see if the readme map contains them, if not, remove
             foreach (var account in accounts)
             {
                 if (account.Value == AccountType.User)//if marked as user in readme,
@@ -273,6 +292,42 @@ namespace cypatScript
 
             return result;
             
+        }
+        
+        private static void ShowMessageBoxWithUsers(Dictionary<String, AccountType> accounts)
+        {    
+            Console.WriteLine("\n");
+
+            foreach (var account in accounts)
+            {
+                switch (account.Value)
+                {
+                    case AccountType.Admin:
+                        Console.WriteLineFormatted("{1} should {0} admin","remain",account.Key,Color.Red,Color.White);
+                        break;
+                    case AccountType.User:
+                        Console.WriteLineFormatted("{1} should {0} user","remain",account.Key,Color.Red,Color.White);
+                        break;
+                    case AccountType.ShouldBeAdmin:
+                        Console.WriteLineFormatted("{1} should {0}","be changed to admin",account.Key,Color.Red,Color.White);
+                        break;
+                    case AccountType.ShouldBeUser:
+                        Console.WriteLineFormatted("{1} should {0}","be changed to user",account.Key,Color.Red,Color.White);
+                        break;
+                    case AccountType.ShouldBeRemoved:
+                        Console.WriteLineFormatted("{1} should {0}","be removed",account.Key,Color.Red,Color.White);
+                        break;
+                    case AccountType.ShouldBeAddedAsAdmin:
+                        Console.WriteLineFormatted("{1} should be {0}","added as admin",account.Key,Color.Red,Color.White);
+                        break;
+                    case AccountType.ShouldBeAddedAsUser:
+                        Console.WriteLineFormatted("{1} should be {0}","added as user",account.Key,Color.Red,Color.White);
+                        break;
+                    
+                }
+                
+            }
+            Console.WriteLine("\n");
         }
         
         
