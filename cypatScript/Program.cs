@@ -10,12 +10,12 @@ using System.IO;
 using System.Text;
 using Console = Colorful.Console;
 using System.Windows.Forms;
-
+using System.Diagnostics;
 
 
 /*
  * backlog:
- * add an option to delete to be reomved users (easy)
+ * add an option to delete to be removed users (easy)
  * stylise the ACII (easy)
  * 
  *
@@ -42,7 +42,8 @@ namespace cypatScript
             while (!usrIn.Equals("Q"))
             {
                 Console.WriteLine("\n please choose an option, or \"Q\" to quit.\n" +
-                                  "1) show bad users from readme");
+                                  "1) show bad users from readme\n" +
+                                  "2) disable like - all services (DONT RUN ON A NORMAL COMPUTER)");
                 
                 usrIn = Console.ReadLine();
                 
@@ -66,11 +67,44 @@ namespace cypatScript
                         }).Start();
                         Thread.Sleep(100);
                     break;
+                
+                case "2":
+                    Console.WriteAscii("WARNING");
+                    Console.WriteLine("this will screw up a machine dude, are you sure? (input anything to progress)");
+                    Console.ReadKey();
+                    
+                    new Thread(() =>
+                    {    Console.WriteLine("\nalright, starting script...");
+                        Thread.CurrentThread.IsBackground = true;
+
+                        var process = new ProcessStartInfo("cmd.exe", "/c" + "Scripts\\delet.bat")
+                        {   CreateNoWindow = true,
+                            RedirectStandardOutput = true,
+                            UseShellExecute = true,
+                            RedirectStandardError = true
+                        }; //no clue if this works
+                        
+                        /*  safety first kids
+                            var ex = Process.Start(process);
+                                ex.Start();
+                                ex.WaitForExit();
+
+                                var output = ex.StandardOutput.ReadToEnd();
+                                var error = ex.StandardError.ReadToEnd();
+                            Console.WriteLine("disabling script done! here is the log:",Color.Fuchsia);
+                            Console.WriteLine("\n" + output+"\n now here is the errors:"+error,Color.Firebrick);
+                            */
+
+
+                    }).Start();
+                    Thread.Sleep(100);
+                    break;
                     
                 
                 case "Q":
                     Console.WriteLine("see ya!");
-                    break;
+                    return;
+                
                 
                 default:
                     Console.WriteLine("please enter a valid operation...");
@@ -80,7 +114,8 @@ namespace cypatScript
             
                 
             }
-        
+            
+            
             
             
         }
