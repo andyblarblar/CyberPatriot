@@ -11,6 +11,8 @@ using System.Text;
 using Console = Colorful.Console;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +31,10 @@ namespace cypatScript
 {
     internal class Program
     {
-        private static readonly String UsrProfile = Environment.GetEnvironmentVariable("USERPROFILE"); 
+        private static readonly string UsrProfile = Environment.GetEnvironmentVariable("USERPROFILE");
+
+        private static readonly Dictionary<string, KeyValuePair<string, string>> WikiDictionary = RetriveWikiFromFile();
+        
         public static void Main(string[] args)
         {   Console.WriteAscii("Code Crusaders");
             Console.WriteLine($"By the Pope! It is currently {DateTime.Now}");
@@ -44,7 +49,8 @@ namespace cypatScript
             {
                 Console.WriteLine("\n please choose an option, or \"Q\" to quit.\n" +
                                   "1) show bad users from readme\n" +
-                                  "2) disable like - all services (DONT RUN ON A NORMAL COMPUTER)");
+                                  "2) disable like - all services (DONT RUN ON A NORMAL COMPUTER)\n" +
+                                  "3) get the file type of a file (magic bytes)");
                 
                 usrIn = Console.ReadLine();
                 
@@ -61,15 +67,12 @@ namespace cypatScript
                                 var readmePath = await GetReadme();
                                 var formatedData = await FormatReadmeToDictionary(await GetReadmeThings(readmePath));
                                 
-                                
                                 ShowMessageBoxWithUsers(CheckIfAccountOnMachine(formatedData,localUsers,localAdmins));
-                                
                                 
                             }
                             catch (Exception e)
                             {
                                 Console.WriteLine("\nThere were problems in the bad users thread! (most likely no readme on desktop, or new error)",Color.Fuchsia);
-                                
                             }
                             
                         }).Start();
@@ -102,12 +105,58 @@ namespace cypatScript
                             Console.WriteLine("disabling script done! here is the log:",Color.Fuchsia);
                             Console.WriteLine("\n" + output+"\n now here is the errors:"+error,Color.Firebrick);
                             */
-
-
                     }).Start();
                     Thread.Sleep(100);
                     break;
+                
+                case "3":
+                    Console.WriteLine("please enter the path of the file to analise...");
+                    var filePath = Console.ReadLine();
                     
+                    byte[] buffer;
+                    try {
+                        using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))//read magic bytes
+                        {
+                            using (var reader = new BinaryReader(fs, new ASCIIEncoding()))
+                            {
+                                buffer = reader.ReadBytes(24);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("ERROR! please enter a valid path!",Color.Fuchsia);
+                        break;
+                    }
+
+                    var hex = BitConverter.ToString(buffer).Replace("-", " ");//convert to hex
+                    var splitHex = hex.Split(' ');
+                    string hexPiece = String.Empty;
+
+                    foreach (var code in WikiDictionary) //checking peace by peace if the dictionary contains the bytes
+                    {
+                        hexPiece = String.Empty;//reseting string to avoid stacking the string
+                        
+                        for(int index = 0;index < 24;index++)//trying all possible permutations of the string
+                        {
+                            hexPiece += " " + splitHex[index];
+                            //Console.WriteLine($"\n{hexPiece}\n", Color.Aqua); 
+
+                            if (Regex.IsMatch(code.Key,$"{hexPiece}"))//TODO optimise this to show the correct things 
+                            {
+                                Console.WriteLine("\n found a value on wikipedia", Color.Magenta);
+                                Console.WriteLine($"File Type: {code.Value.Key}", Color.Red);
+                                Console.WriteLine($"Description: {code.Value.Value}", Color.Red);
+                                
+                            }
+                            
+                        }//end for
+                        
+                    }
+                    
+                    Console.WriteLine($"If no result or multiple results, please look up the magic bytes: {hex}",Color.Lime);
+                    break;
+                
                 
                 case "Q":
                     Console.WriteLine("see ya!");
@@ -118,13 +167,9 @@ namespace cypatScript
                     Console.WriteLine("please enter a valid operation...");
                     break;
                     
-                }
-            
+                }//end switch
                 
             }
-            
-            
-            
             
         }
 
@@ -194,7 +239,7 @@ namespace cypatScript
         /// </summary>
         /// <param name="readmePath">path to the readme</param>
         /// <returns>raw users and admins (so not usable yet)</returns>
-        private static async Task<String> GetReadmeThings(String readmePath)
+        private static async Task<string> GetReadmeThings(string readmePath)
         {  
             return await Task.Run(() =>
             {
@@ -209,7 +254,7 @@ namespace cypatScript
 
                 }
 
-                return String.Empty; 
+                return string.Empty; 
             }
                 );
         }
@@ -220,14 +265,14 @@ namespace cypatScript
         /// </summary>
         /// <param name="readmeData">the string to parse</param>
 
-        private static async Task<Dictionary<String, AccountType>> FormatReadmeToDictionary(String readmeData)
+        private static async Task<Dictionary<string, AccountType>> FormatReadmeToDictionary(string readmeData)
         {
             return await Task.Run(() => {
-                var result = new Dictionary<String, AccountType>();
+                var result = new Dictionary<string, AccountType>();
             var users = new List<string>();
             var admins = new List<string>();
 
-            String[] split = readmeData.Split(new[] {"Authorized Users:"}, StringSplitOptions.RemoveEmptyEntries);
+            string[] split = readmeData.Split(new[] {"Authorized Users:"}, StringSplitOptions.RemoveEmptyEntries);
 
             users = split[1].Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -266,9 +311,9 @@ namespace cypatScript
         /// </summary>
         /// <param name="accounts">A Dictionary of accounts from the readme marked as the proffered type via the Value</param>
         /// <returns>A Dictionary formatted with the result of the check. User or Admin means the account is fine, the rest are self explanatory</returns>
-        private static Dictionary<String,AccountType> CheckIfAccountOnMachine(Dictionary<String,AccountType> accounts,List<String> localUsers,List<String> localAdmins)
+        private static Dictionary<string,AccountType> CheckIfAccountOnMachine(Dictionary<string,AccountType> accounts,List<string> localUsers,List<string> localAdmins)
         {
-            var result = new Dictionary<String,AccountType>();
+            var result = new Dictionary<string,AccountType>();
             
             foreach (var account in accounts)
             {
@@ -364,7 +409,7 @@ namespace cypatScript
             
         }
         
-        private static void ShowMessageBoxWithUsers(Dictionary<String, AccountType> accounts)
+        private static void ShowMessageBoxWithUsers(Dictionary<string, AccountType> accounts)
         {    
             Console.WriteLine("\n");
 
@@ -412,7 +457,26 @@ namespace cypatScript
         
         
         #endregion
+
+        #region util
+
+        /// <summary>
+        /// desirialises the wiki definitions of magic bytes.  
+        /// </summary>
+        /// <returns>Dictionary where the Key is the starting hex values of a file, and the Value.key is the file extension and Value.Value is the description</returns>
+        public static Dictionary<string,KeyValuePair<string,string>> RetriveWikiFromFile()
+        {
+            var FileName = @"C:\Users\Andy blarblar\RiderProjects\cypatScript\cypatScript\resources\wiki_map.bin";
+            Stream openFileStream = File.OpenRead(FileName);
+            BinaryFormatter deserializer = new BinaryFormatter(); 
+            var WikiDictionarys = (Dictionary<string,KeyValuePair<string,string>>)deserializer.Deserialize(openFileStream);
+            return WikiDictionarys;
+            
+        }
         
+        
+
+        #endregion
         
         
         
