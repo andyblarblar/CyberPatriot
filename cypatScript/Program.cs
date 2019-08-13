@@ -11,10 +11,12 @@ using System.Text;
 using Console = Colorful.Console;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Resources;
 
 /*
  * backlog:
@@ -34,11 +36,13 @@ namespace cypatScript
         private static readonly string UsrProfile = Environment.GetEnvironmentVariable("USERPROFILE");
 
         private static readonly Dictionary<string, KeyValuePair<string, string>> WikiDictionary = RetriveWikiFromFile();
+
         
         public static void Main(string[] args)
         {   Console.WriteAscii("Code Crusaders");
             Console.WriteLine($"By the Pope! It is currently {DateTime.Now}");
             MainLoop();
+            
         }
 
         private static void MainLoop()
@@ -88,7 +92,7 @@ namespace cypatScript
                     {    Console.WriteLine("\nalright, starting script...");
                         Thread.CurrentThread.IsBackground = true;
 
-                        var process = new ProcessStartInfo("cmd.exe", "/c" + "Scripts\\delet.bat")
+                        var process = new ProcessStartInfo("cmd.exe", "/c" + "delet.bat")// TODO not even close to right file
                         {   CreateNoWindow = true,
                             RedirectStandardOutput = true,
                             UseShellExecute = true,
@@ -461,20 +465,57 @@ namespace cypatScript
         #region util
 
         /// <summary>
-        /// desirialises the wiki definitions of magic bytes.  
+        /// deserializes the wiki definitions of magic bytes from the embedded serialised object.  
         /// </summary>
         /// <returns>Dictionary where the Key is the starting hex values of a file, and the Value.key is the file extension and Value.Value is the description</returns>
         public static Dictionary<string,KeyValuePair<string,string>> RetriveWikiFromFile()
         {
-            var FileName = @"C:\Users\Andy blarblar\RiderProjects\cypatScript\cypatScript\resources\wiki_map.bin";
-            Stream openFileStream = File.OpenRead(FileName);
-            BinaryFormatter deserializer = new BinaryFormatter(); 
-            var WikiDictionarys = (Dictionary<string,KeyValuePair<string,string>>)deserializer.Deserialize(openFileStream);
-            return WikiDictionarys;
+            var bytes = ReadResourceFileAsBytes("wiki_map.bin");
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                BinaryFormatter deserializer = new BinaryFormatter();
+                ms.Position = 0;
+                var wikiDictionarys =
+                    (Dictionary<string, KeyValuePair<string, string>>) deserializer.Deserialize(ms);
+                return wikiDictionarys;
+            }
             
         }
         
+        /// <summary>
+        /// Read contents of an embedded resource file as a string
+        /// </summary>
+        /// <param name="filename">just the files name ex. file.txt</param>
+        public static string ReadResourceFileAsString(string filename)
+        {
+            var thisAssembly = Assembly.GetExecutingAssembly();
+            using (var stream = thisAssembly.GetManifestResourceStream(thisAssembly.GetManifestResourceNames()
+                .Single(str => str.EndsWith(filename))))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
         
+        /// <summary>
+        /// Read contents of an embedded resource file as bytes
+        /// </summary>
+        /// <param name="filename">just the files name ex. file.txt</param>
+        public static byte[] ReadResourceFileAsBytes(string filename)
+        {
+            var thisAssembly = Assembly.GetExecutingAssembly();
+            using (var stream = thisAssembly.GetManifestResourceStream(thisAssembly.GetManifestResourceNames()
+                .Single(str => str.EndsWith(filename))))
+            {
+                if (stream == null) return null;
+                byte[] ba = new byte[stream.Length];
+                stream.Read(ba, 0, ba.Length);
+                return ba;
+                
+            }
+        }
 
         #endregion
         
