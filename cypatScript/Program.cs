@@ -9,14 +9,12 @@ using System.Threading;
 using System.IO;
 using System.Text;
 using Console = Colorful.Console;
-using System.Windows.Forms;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Resources;
+
 
 /*
  * backlog:
@@ -59,7 +57,8 @@ namespace cypatScript
                 usrIn = Console.ReadLine();
                 
                 switch (usrIn)
-                {case "1":
+                {
+                    case "1":
                         new Thread(async () => 
                         {Console.WriteLine("starting bad users search, this will take a while the first time...");
                             Thread.CurrentThread.IsBackground = true;
@@ -72,7 +71,6 @@ namespace cypatScript
                                 var formatedData = await FormatReadmeToDictionary(await GetReadmeThings(readmePath));
                                 
                                 ShowMessageBoxWithUsers(CheckIfAccountOnMachine(formatedData,localUsers,localAdmins));
-                                
                             }
                             catch (Exception e)
                             {
@@ -92,23 +90,23 @@ namespace cypatScript
                     {    Console.WriteLine("\nalright, starting script...");
                         Thread.CurrentThread.IsBackground = true;
 
-                        var process = new ProcessStartInfo("cmd.exe", "/c" + "delet.bat")// TODO not even close to right file
+                        var process = new ProcessStartInfo("cmd.exe", "/c" + @".\scripts\delet.bat")
                         {   CreateNoWindow = true,
                             RedirectStandardOutput = true,
-                            UseShellExecute = true,
+                            UseShellExecute = false,
                             RedirectStandardError = true
-                        }; //no clue if this works
+                        }; 
                         
-                        /*  safety first kids
-                            var ex = Process.Start(process);
-                                ex.Start();
-                                ex.WaitForExit();
-
-                                var output = ex.StandardOutput.ReadToEnd();
-                                var error = ex.StandardError.ReadToEnd();
-                            Console.WriteLine("disabling script done! here is the log:",Color.Fuchsia);
-                            Console.WriteLine("\n" + output+"\n now here is the errors:"+error,Color.Firebrick);
-                            */
+                        /* TODO remove this safety before all releases
+                        var ex = Process.Start(process);
+                        ex.Start();
+                        ex.WaitForExit();
+                        var output = ex.StandardOutput.ReadToEnd();
+                        var error = ex.StandardError.ReadToEnd();
+                        Console.WriteLine("disabling script done! here is the log:");
+                        Console.WriteLine("\n" + output+"\n now here are the errors:"+error);
+                        */
+                        
                     }).Start();
                     Thread.Sleep(100);
                     break;
