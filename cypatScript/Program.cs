@@ -20,7 +20,7 @@ using System.Threading.Tasks;
  * backlog:
  * add an option to delete to be removed users (easy)
  * stylise the ACII (easy)
- * 
+ * add an option to change the Cypat sound files C:\CyberPatriot\gain.wav, C:\CyberPatriot\alarm.wav 
  *
  *
  * 
@@ -40,7 +40,6 @@ namespace cypatScript
         {   Console.WriteAscii("Code Crusaders");
             Console.WriteLine($"By the Pope! It is currently {DateTime.Now}");
             MainLoop();
-            
         }
 
         private static void MainLoop()
@@ -52,7 +51,8 @@ namespace cypatScript
                 Console.WriteLine("\n please choose an option, or \"Q\" to quit.\n" +
                                   "1) show bad users from readme\n" +
                                   "2) disable like - all services (DONT RUN ON A NORMAL COMPUTER)\n" +
-                                  "3) get the file type of a file (magic bytes)");
+                                  "3) get the file type of a file (magic bytes)\n" +
+                                  "4) change the cypat sounds (might be a bad idea in comp LOL)");
                 
                 usrIn = Console.ReadLine();
                 
@@ -97,7 +97,7 @@ namespace cypatScript
                             RedirectStandardError = true
                         }; 
                         
-                        /* TODO remove this safety before all releases
+                        
                         var ex = Process.Start(process);
                         ex.Start();
                         ex.WaitForExit();
@@ -105,7 +105,6 @@ namespace cypatScript
                         var error = ex.StandardError.ReadToEnd();
                         Console.WriteLine("disabling script done! here is the log:");
                         Console.WriteLine("\n" + output+"\n now here are the errors:"+error);
-                        */
                         
                     }).Start();
                     Thread.Sleep(100);
@@ -159,6 +158,50 @@ namespace cypatScript
                     Console.WriteLine($"If no result or multiple results, please look up the magic bytes: {hex}",Color.Lime);
                     break;
                 
+                case "4"://dont thread
+                    if (!Directory.Exists(@"C:\Cyberpatriot"))
+                    {Console.WriteLine("You silly goose! This isnt a cypat VM!");
+                        break;
+                    }
+                    
+                    Console.WriteLine("What do you want to replace the score gain sound with?\n" +
+                                       "1) This is a good result!\n" +
+                                       "Literally anything else) dont change");
+                        var response = Console.ReadLine();
+                        
+                        switch (response)
+                        {
+                            case "1":
+                                var musicTrack = ReadResourceFileAsBytes("good-result.mp3");
+                                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
+                                break;
+                            
+                            default:
+                                Console.WriteLine("alrighty");
+                                break;
+                        }
+                    
+                    
+                    Console.WriteLine("And what about the score lose sound?\n" +
+                                      "1) OOF!\n" +
+                                      "2) scott the woz\n" +
+                                      "anything else) dont change");
+
+                    response = Console.ReadLine();
+
+                    switch (response)
+                    {
+                        case "1":
+                            var musicTrack = ReadResourceFileAsBytes("roblox-death-sound_1.mp3");
+                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            break;
+
+                    }
+                    
+                    Thread.Sleep(100);
+                    break;
+                    
+                    
                 
                 case "Q":
                     Console.WriteLine("see ya!");

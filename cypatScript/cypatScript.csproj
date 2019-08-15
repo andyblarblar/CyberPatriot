@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>portable</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -64,6 +64,8 @@
     <EmbeddedResource Include="wiki_map.bin" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="good-result.mp3" />
+    <EmbeddedResource Include="roblox-death-sound_1.mp3" />
     <Content Include="scripts\delet.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
