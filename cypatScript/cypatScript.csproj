@@ -66,6 +66,7 @@
   <ItemGroup>
     <EmbeddedResource Include="good-result.mp3" />
     <EmbeddedResource Include="roblox-death-sound_1.mp3" />
+    <EmbeddedResource Include="scottDARNIT.mp3" />
     <Content Include="scripts\delet.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

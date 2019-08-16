@@ -172,7 +172,7 @@ namespace cypatScript
                         switch (response)
                         {
                             case "1":
-                                var musicTrack = ReadResourceFileAsBytes("good-result.mp3");
+                                var musicTrack = ReadResourceFileAsBytes("good-result.mp3");//just copy paste for new sounds
                                 File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
                                 break;
                             
@@ -184,7 +184,7 @@ namespace cypatScript
                     
                     Console.WriteLine("And what about the score lose sound?\n" +
                                       "1) OOF!\n" +
-                                      "2) scott the woz\n" +
+                                      "2) scott the woz (oh heck a swear)\n" +
                                       "anything else) dont change");
 
                     response = Console.ReadLine();
@@ -193,6 +193,11 @@ namespace cypatScript
                     {
                         case "1":
                             var musicTrack = ReadResourceFileAsBytes("roblox-death-sound_1.mp3");
+                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            break;
+                        
+                        case "2":
+                             musicTrack = ReadResourceFileAsBytes("scottDARNIT.mp3");
                             File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
                             break;
 
