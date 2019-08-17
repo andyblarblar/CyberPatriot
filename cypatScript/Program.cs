@@ -20,7 +20,6 @@ using System.Threading.Tasks;
  * backlog:
  * add an option to delete to be removed users (easy)
  * stylise the ACII (easy)
- * add an option to change the Cypat sound files C:\CyberPatriot\gain.wav, C:\CyberPatriot\alarm.wav 
  *
  *
  * 
@@ -166,6 +165,7 @@ namespace cypatScript
                     
                     Console.WriteLine("What do you want to replace the score gain sound with?\n" +
                                        "1) This is a good result!\n" +
+                                       "2) noice\n" +
                                        "Literally anything else) dont change");
                         var response = Console.ReadLine();
                         
@@ -173,6 +173,11 @@ namespace cypatScript
                         {
                             case "1":
                                 var musicTrack = ReadResourceFileAsBytes("good-result.mp3");//just copy paste for new sounds
+                                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
+                                break;
+                            
+                            case "2":
+                                 musicTrack = ReadResourceFileAsBytes("nice.mp3");//just copy paste for new sounds
                                 File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
                                 break;
                             
@@ -200,17 +205,17 @@ namespace cypatScript
                              musicTrack = ReadResourceFileAsBytes("scottDARNIT.mp3");
                             File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
                             break;
-
                     }
                     
                     Thread.Sleep(100);
                     break;
-                    
-                    
+                
+                
                 
                 case "Q":
                     Console.WriteLine("see ya!");
                     return;
+                
                 
                 
                 default:
