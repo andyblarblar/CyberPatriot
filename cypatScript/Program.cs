@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 
 /*
@@ -73,7 +74,7 @@ namespace cypatScript
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine("\nThere were problems in the bad users thread! (most likely no readme on desktop, or new error)",Color.Fuchsia);
+                                Console.WriteLine("\nThere were problems in the bad users thread! (most likely no readme on desktop, or new error)" + e,Color.Fuchsia);
                             }
                             
                         }).Start();
@@ -278,6 +279,17 @@ namespace cypatScript
             );
             
         }
+
+        /// <summary>
+        /// parses a .Lnk file for its URL.
+        /// </summary>
+        /// <param name="readmePath"></param>
+        /// <returns>the full URL</returns>
+        private static string ParseLnk(string readmePath)
+        {
+            return File.ReadAllLines(readmePath).Where(line => line.Contains("URL")).Select(url => url.Substring(4)).FirstOrDefault();
+        }
+        
         
         /// <summary>
         /// Gets the path of a file with readme in the name 
@@ -285,7 +297,7 @@ namespace cypatScript
         /// <returns>the FULL path to the file</returns>
         private static Task<string> GetReadme() {
             
-            return Task.Run(() => Directory.GetFiles(UsrProfile + "\\Desktop", "*readme*")[0]); 
+            return Task.Run(() => Directory.GetFiles(UsrProfile + "\\Desktop", "*Readme*")[0]); 
             
         }
         
@@ -298,8 +310,10 @@ namespace cypatScript
         {  
             return await Task.Run(() =>
             {
-                var doc = new HtmlAgilityPack.HtmlDocument();
-                doc.Load(readmePath);
+                var URL = ParseLnk(readmePath);
+                var web = new HtmlWeb();
+                var doc = web.Load(URL);
+                
                 foreach (var node in doc.DocumentNode.Descendants().ToList())
                 {
                     if (node.Name.Equals("pre"))
