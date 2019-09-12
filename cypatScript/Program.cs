@@ -297,7 +297,7 @@ namespace cypatScript
         /// <returns>the FULL path to the file</returns>
         private static Task<string> GetReadme() {
             
-            return Task.Run(() => Directory.GetFiles(UsrProfile + "\\Desktop", "*Readme*")[0]); 
+            return Task.Run(() => Directory.GetFiles(UsrProfile + "\\Desktop", "*README*")[0]); 
             
         }
         
