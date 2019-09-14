@@ -167,6 +167,7 @@ namespace cypatScript
                     Console.WriteLine("What do you want to replace the score gain sound with?\n" +
                                        "1) This is a good result!\n" +
                                        "2) noice\n" +
+                                       "3) MC level up\n" +
                                        "Literally anything else) dont change");
                         var response = Console.ReadLine();
                         
@@ -181,6 +182,10 @@ namespace cypatScript
                                  musicTrack = ReadResourceFileAsBytes("nice.mp3");//just copy paste for new sounds
                                 File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
                                 break;
+                            case "3":
+                                 musicTrack = ReadResourceFileAsBytes("levelup.mp3");//just copy paste for new sounds
+                                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
+                                break;
                             
                             default:
                                 Console.WriteLine("alrighty");
@@ -188,9 +193,12 @@ namespace cypatScript
                         }
                     
                     
-                    Console.WriteLine("And what about the score lose sound?\n" +
+                    Console.WriteLine("And what about the score lose and siren sound?\n" +
                                       "1) OOF!\n" +
                                       "2) scott the woz (oh heck a swear)\n" +
+                                      "3) 56k\n" +
+                                      "4) nope\n" +
+                                      "5) seinfeld\n" +
                                       "anything else) dont change");
 
                     response = Console.ReadLine();
@@ -200,12 +208,33 @@ namespace cypatScript
                         case "1":
                             var musicTrack = ReadResourceFileAsBytes("roblox-death-sound_1.mp3");
                             File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
                             break;
                         
                         case "2":
                              musicTrack = ReadResourceFileAsBytes("scottDARNIT.mp3");
                             File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
                             break;
+                        
+                        case "3":
+                             musicTrack = ReadResourceFileAsBytes("56k.mp3");
+                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            break;
+                        
+                        case "4":
+                             musicTrack = ReadResourceFileAsBytes("nope.mp3");
+                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            break;
+                        
+                        case "5":
+                             musicTrack = ReadResourceFileAsBytes("seinfeld.mp3");
+                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
+                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            break;
+                        
                     }
                     
                     Thread.Sleep(100);
@@ -487,11 +516,11 @@ namespace cypatScript
                     switch (account.Value)
                     {
                         case AccountType.Admin:
-                            Console.WriteLineFormatted("{1} should {0} admin", "remain", account.Key, Color.Red,
+                            Console.WriteLineFormatted("{1} should {0} admin", "remain", account.Key, Color.Blue,
                                 Color.White);
                             break;
                         case AccountType.User:
-                            Console.WriteLineFormatted("{1} should {0} user", "remain", account.Key, Color.Red,
+                            Console.WriteLineFormatted("{1} should {0} user", "remain", account.Key, Color.Blue,
                                 Color.White);
                             break;
                         case AccountType.ShouldBeAdmin:
@@ -507,11 +536,11 @@ namespace cypatScript
                                 Color.White);
                             break;
                         case AccountType.ShouldBeAddedAsAdmin:
-                            Console.WriteLineFormatted("{1} should be {0}", "added as admin", account.Key, Color.Red,
+                            Console.WriteLineFormatted("{1} should be {0}", "added as admin", account.Key, Color.Yellow,
                                 Color.White);
                             break;
                         case AccountType.ShouldBeAddedAsUser:
-                            Console.WriteLineFormatted("{1} should be {0}", "added as user", account.Key, Color.Red,
+                            Console.WriteLineFormatted("{1} should be {0}", "added as user", account.Key, Color.Yellow,
                                 Color.White);
                             break;
 
