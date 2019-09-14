@@ -289,16 +289,15 @@ namespace cypatScript
         {
             return File.ReadAllLines(readmePath).Where(line => line.Contains("URL")).Select(url => url.Substring(4)).FirstOrDefault();
         }
-        
-        
+
         /// <summary>
         /// Gets the path of a file with readme in the name 
         /// </summary>
         /// <returns>the FULL path to the file</returns>
         private static Task<string> GetReadme() {
             
-            return Task.Run(() => Directory.GetFiles(UsrProfile + "\\Desktop", "*README*")[0]); 
-            
+            //return Task.Run(() => Directory.GetFiles(UsrProfile + "\\Desktop", "*README*")[0]); old, use the direct path instead
+            return Task.Run(() => @"C:\CyberPatriot\README.url");
         }
         
         /// <summary>
