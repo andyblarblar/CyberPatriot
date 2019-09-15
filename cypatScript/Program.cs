@@ -172,14 +172,14 @@ namespace cypatScript
                         switch (response)
                         {
                             case "1":
-                                WriteSoundFile(true,"good-result.mp3");
+                                WriteSoundFile(true,"good-result.wav");
                                 break;
                             
                             case "2":
-                                WriteSoundFile(true,"nice.mp3");
+                                WriteSoundFile(true,"nice.wav");
                                 break;
                             case "3":
-                                WriteSoundFile(true, "levelup.mp3");
+                                WriteSoundFile(true, "levelup.wav");
                                 break;
                             
                             default:
@@ -201,23 +201,23 @@ namespace cypatScript
                     switch (response)
                     {
                         case "1":
-                            WriteSoundFile(false, "roblox-death-sound_1.mp3");
+                            WriteSoundFile(false, "roblox-death-sound_1.wav");
                             break;
                         
                         case "2":
-                            WriteSoundFile(false, "scottDARNIT.mp3");
+                            WriteSoundFile(false, "scottDARNIT.wav");
                             break;
                         
                         case "3":
-                            WriteSoundFile(false,"56k.mp3");
+                            WriteSoundFile(false,"56k.wav");
                             break;
                         
                         case "4":
-                            WriteSoundFile(false,"nope.mp3");
+                            WriteSoundFile(false,"nope.wav");
                             break;
                         
                         case "5":
-                             WriteSoundFile(false, "seinfeld.mp3");
+                             WriteSoundFile(false, "seinfeld.wav");
                              break;
                         
                     }
