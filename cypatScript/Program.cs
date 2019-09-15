@@ -31,10 +31,8 @@ namespace cypatScript
 {
     internal class Program
     {
-        private static readonly string UsrProfile = Environment.GetEnvironmentVariable("USERPROFILE");
-
+        
         private static readonly Dictionary<string, KeyValuePair<string, string>> WikiDictionary = RetriveWikiFromFile();
-
         
         public static void Main(string[] args)
         {   Console.WriteAscii("Code Crusaders");
@@ -174,17 +172,14 @@ namespace cypatScript
                         switch (response)
                         {
                             case "1":
-                                var musicTrack = ReadResourceFileAsBytes("good-result.mp3");//just copy paste for new sounds
-                                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
+                                WriteSoundFile(true,"good-result.mp3");
                                 break;
                             
                             case "2":
-                                 musicTrack = ReadResourceFileAsBytes("nice.mp3");//just copy paste for new sounds
-                                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
+                                WriteSoundFile(true,"nice.mp3");
                                 break;
                             case "3":
-                                 musicTrack = ReadResourceFileAsBytes("levelup.mp3");//just copy paste for new sounds
-                                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",musicTrack);
+                                WriteSoundFile(true, "levelup.mp3");
                                 break;
                             
                             default:
@@ -206,34 +201,24 @@ namespace cypatScript
                     switch (response)
                     {
                         case "1":
-                            var musicTrack = ReadResourceFileAsBytes("roblox-death-sound_1.mp3");
-                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
-                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            WriteSoundFile(false, "roblox-death-sound_1.mp3");
                             break;
                         
                         case "2":
-                             musicTrack = ReadResourceFileAsBytes("scottDARNIT.mp3");
-                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
-                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            WriteSoundFile(false, "scottDARNIT.mp3");
                             break;
                         
                         case "3":
-                             musicTrack = ReadResourceFileAsBytes("56k.mp3");
-                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
-                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            WriteSoundFile(false,"56k.mp3");
                             break;
                         
                         case "4":
-                             musicTrack = ReadResourceFileAsBytes("nope.mp3");
-                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
-                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
+                            WriteSoundFile(false,"nope.mp3");
                             break;
                         
                         case "5":
-                             musicTrack = ReadResourceFileAsBytes("seinfeld.mp3");
-                            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",musicTrack);
-                            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",musicTrack);
-                            break;
+                             WriteSoundFile(false, "seinfeld.mp3");
+                             break;
                         
                     }
                     
@@ -258,8 +243,7 @@ namespace cypatScript
             
         }
 
-
-
+        
 
         
         #region Users and readme 
@@ -609,6 +593,21 @@ namespace cypatScript
                 
             }
         }
+
+        private static void WriteSoundFile(bool isGain, string fileName)
+        {
+            var file = ReadResourceFileAsBytes(fileName);
+            if (isGain)
+            {
+                File.WriteAllBytes(@"C:\CyberPatriot\gain.wav",file);
+                return;
+            }
+            
+            File.WriteAllBytes(@"C:\CyberPatriot\alarm.wav",file);
+            File.WriteAllBytes(@"C:\CyberPatriot\siren.wav",file);
+
+        }
+
 
         #endregion
         
