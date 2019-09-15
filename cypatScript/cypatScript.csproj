@@ -68,17 +68,17 @@
     <EmbeddedResource Include="wiki_map.bin" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="56k.wav" />
-    <Content Include="good-result.wav" />
-    <Content Include="levelup.wav" />
-    <Content Include="nice.wav" />
-    <Content Include="nope.wav" />
-    <Content Include="roblox-death-sound_1.wav" />
-    <Content Include="scottDARNIT.wav" />
+    <EmbeddedResource Include="56k.wav" />
+    <EmbeddedResource Include="good-result.wav" />
+    <EmbeddedResource Include="levelup.wav" />
+    <EmbeddedResource Include="nice.wav" />
+    <EmbeddedResource Include="nope.wav" />
+    <EmbeddedResource Include="roblox-death-sound_1.wav" />
+    <EmbeddedResource Include="scottDARNIT.wav" />
     <Content Include="scripts\delet.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="seinfeld.wav" />
+    <EmbeddedResource Include="seinfeld.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
